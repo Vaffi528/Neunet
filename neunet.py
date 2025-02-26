@@ -63,16 +63,20 @@ class Network():
                 #list of the values of deltas form all the layers
                 deltas = [err * self.derivative(neurons[-1])]
 
-                #all other layer's weights adjustment
+                #recent index of bias neuron's weights sequence number
+                bias_index = -1
+
+                #all the layer's weights adjustment
                 for i in range(len(self.weights_all)):
                     self.weights_all[-(i+1)] -= (self.l*deltas[i]) * neurons[-(i+2)].T
                     dn = (deltas[i] @ self.weights_all[-(i+1)].T) * self.derivative(neurons[-(i+2)])
                     deltas.append(dn)
                     #biases weights adjustment
                     if (len(self.weights_all)-1)-i in self.bias_indexes:
-                        self.bias_all[len(self.weights_all)-1 - i] -= self.l*deltas[i]
+                        self.bias_all[bias_index] -= self.l*deltas[i]
+                        bias_index -= 1
 
-    def run(self, inputt, load=None):
+    def run(self, inputt, load=None) -> np.array:
         if load != None:
             self.weights_all = list(map(lambda x: np.array(x), load['weights']))
             if self.bias_indexes != []:
@@ -92,7 +96,8 @@ class Network():
             input_hidden_activated = self.function(input_hidden)
             neurons.append(input_hidden_activated)
         print(neurons[-1])
-    
+        return neurons[-1]
+        
     def save_weights(self):
         if self.bias_indexes != []:
             data = {"weights":list(map(lambda x: x.tolist(), self.weights_all)),  "bias":list(map(lambda x: x.tolist(), self.bias_all))}
