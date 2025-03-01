@@ -38,7 +38,7 @@ class Network():
         lens = len(inputt[0])
 
         #training
-        for i in range(epo):
+        for e in range(epo):
             #randomising data to preventing nn form wrong regularities
             np.random.shuffle(train)
             for element in train:
@@ -76,6 +76,10 @@ class Network():
                         self.bias_all[bias_index] -= self.l*deltas[i]
                         bias_index -= 1
 
+            if e - int(epo/4) == 0 or e - int(epo/2) == 0 or e - int(epo/1.333333333) == 0:
+                print(f'done: {round(e/epo, 2)*100}%')
+        print(f'done: 100%')
+        
     def run(self, inputt, load=None) -> np.array:
         if load != None:
             self.weights_all = list(map(lambda x: np.array(x), load['weights']))

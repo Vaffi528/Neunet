@@ -3,7 +3,7 @@ import numpy as np
 import json
 
 '''
-one more expample:
+#one more expample:
 
 inp = np.array([[0,0,0],[1,1,0],[0,1,1],[1,0,1],[1,1,1],[0,1,0]])
 out = np.array([[0],[1],[0],[1],[1],[0]])
@@ -28,7 +28,7 @@ ne.run([1,1,1], load)
 
 
 '''
-example with the mnist dataset:
+#example with the mnist dataset:
 
 def to_out(x):
     arr = [0 for i in range(10)]
