@@ -102,4 +102,30 @@ for i in range(len(inp_test)):
 print('accuracy:', str(accuracy/len(inp_test)*100)+'%')
 
 '''
+'''
+data = np.load('mnist.npz', allow_pickle=True)
+lst = data.files
 
+inp_train = data['x_train'][0]
+
+with open('info.txt', 'w', encoding='utf-8') as file:
+    file.write(f'{inp_train}')'''
+
+'''
+from PIL import Image
+
+img = np.array(Image.open('image.png').convert('L')).reshape(784) / 255
+
+with open('data.json', 'r', encoding='utf-8') as file:
+    load = json.load(file)
+
+network = nn.Network([784, 10, 10], [1], l=0.5)
+
+def to_number(x):
+    x = x[0]
+    x = list(map(lambda x: x.tolist(), x))
+    numb = x.index(max(x))
+    return numb
+
+result = network.run(img, load)
+print(to_number(result))'''
