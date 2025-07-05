@@ -17,6 +17,8 @@ class Network():
         np.random.seed(1)
         self.weights_all = [2*np.random.random((neurons[i],neurons[i+1]))-1 for i in range(len(neurons)-1)]
         self.bias_indexes = bias
+        self.deltas = [np.zeros((neurons[i],neurons[i+1])) for i in range(len(neurons)-1)]
+        self.deltas_bias = [np.zeros((1,neurons[index+1])) for index in bias]
         if bias != []:
             try:
                 self.bias_all = [2*np.random.random((1,neurons[index+1]))-1 for index in bias]
@@ -62,19 +64,29 @@ class Network():
                 err = neurons[-1] - np.array([element[lens:]])
                 #list of the values of deltas form all the layers
                 deltas = [err * self.derivative(neurons[-1])]
-
-                #recent index of bias neuron's weights sequence number
+                
+                #recent index of bias neuron's delta's sequence number
                 bias_index = -1
-
-                #all the layer's weights adjustment
-                for i in range(len(self.weights_all)):
-                    self.weights_all[-(i+1)] -= (self.l*deltas[i]) * neurons[-(i+2)].T
+                #all the layer's deltas adjustment
+                for i in range(len(self.weights_all)): 
+                    self.deltas[-(i+1)] += deltas[i] * neurons[-(i+2)].T
                     dn = (deltas[i] @ self.weights_all[-(i+1)].T) * self.derivative(neurons[-(i+2)])
                     deltas.append(dn)
-                    #biases weights adjustment
                     if (len(self.weights_all)-1)-i in self.bias_indexes:
-                        self.bias_all[bias_index] -= self.l*deltas[i]
+                        self.deltas_bias[bias_index] += deltas[i]
                         bias_index -= 1
+                    
+            
+            #recent index of bias neuron's weights sequence number
+            bias_index = -1
+
+            #all the layer's weights adjustment
+            for i in range(len(self.weights_all)):
+                self.weights_all[-(i+1)] -= self.l * self.deltas[-(i+1)]
+                #biases weights adjustment
+                if (len(self.weights_all)-1)-i in self.bias_indexes:
+                    self.bias_all[bias_index] -= self.l * self.deltas_bias[-(i+1)]
+                    bias_index -= 1
 
             if e - int(epo/4) == 0 or e - int(epo/2) == 0 or e - int(epo/1.333333333) == 0:
                 print(f'done: {round(e/epo, 2)*100}%')
