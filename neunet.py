@@ -43,7 +43,7 @@ class Network():
         for e in range(epo):
             #randomising data to preventing nn form wrong regularities
             np.random.shuffle(train)
-            for element in train:
+            for it, element in enumerate(train):
                 #list of the values of neurons from all the layers
                 neurons = [np.array([element[0:lens]])]
                 #recent index of bias neuron's weights sequence number
@@ -75,18 +75,21 @@ class Network():
                     if (len(self.weights_all)-1)-i in self.bias_indexes:
                         self.deltas_bias[bias_index] += deltas[i]
                         bias_index -= 1
-                    
-            
-            #recent index of bias neuron's weights sequence number
-            bias_index = -1
+                
+                if it % 1000 == 0 or it == len(train)-1:
+                    #recent index of bias neuron's weights sequence number
+                    bias_index = -1
 
-            #all the layer's weights adjustment
-            for i in range(len(self.weights_all)):
-                self.weights_all[-(i+1)] -= self.l * self.deltas[-(i+1)]
-                #biases weights adjustment
-                if (len(self.weights_all)-1)-i in self.bias_indexes:
-                    self.bias_all[bias_index] -= self.l * self.deltas_bias[-(i+1)]
-                    bias_index -= 1
+                    #all the layer's weights adjustment
+                    for i in range(len(self.weights_all)):
+                        self.weights_all[-(i+1)] -= self.l * self.deltas[-(i+1)]
+                        #biases weights adjustment
+                        if (len(self.weights_all)-1)-i in self.bias_indexes:
+                            self.bias_all[bias_index] -= self.l * self.deltas_bias[bias_index]
+                            bias_index -= 1
+
+                    for i in range(len(neurons)-1): self.deltas[i] *= 0 
+                    for i in range(len(self.deltas_bias)): self.deltas_bias[i] *= 0 
 
             if e - int(epo/4) == 0 or e - int(epo/2) == 0 or e - int(epo/1.333333333) == 0:
                 print(f'done: {round(e/epo, 2)*100}%')
